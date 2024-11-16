@@ -1,4 +1,5 @@
-from cli_app.command_loader import COMMAND_NAME_MAX_LENGTH
+import os
+from cli_app.config import COMMAND_NAME_MAX_LENGTH
 
 def generate_spaces(count):
     """
@@ -14,11 +15,27 @@ def generate_spaces(count):
         raise ValueError("Count must be a non-negative integer.")
     return ' ' * count
 
-def print_help(commands):
+def print_help(folders, current_context):
     print("Simple CLI App")
     print("Commands:")
-    lenght = COMMAND_NAME_MAX_LENGTH
-    for command in commands:
-        print(f"  {command['name']}{generate_spaces(lenght - len(command['name']))}- {command['description']}")
-    print(f"  help{generate_spaces(lenght - len('help'))}- Show this help message")
-    print(f"  exit{generate_spaces(lenght - len('exit'))}- Exit the program")
+    length = COMMAND_NAME_MAX_LENGTH
+    context_info = f" Selected folder: {current_context}" if current_context else " Selected folder: None"
+    print(f"\n  {context_info}")
+
+    # Build in commands
+    print(f"\n  help{generate_spaces(length - len('help'))}- Show this help message")
+    print(f"  exit{generate_spaces(length - len('exit'))}- Exit the program")
+    print(f"  set_folder [folder_name]{generate_spaces(length - len('set_folder'))}- Set folder context")
+
+    # Iterate over the folders and their commands
+    for folder in folders:
+        print(f"\n{folder['folder']} commands:")
+        for command in folder['commands']:
+            print(f"  {command['name']}{generate_spaces(length - len(command['name']))}- {command['description']}")
+
+def print_current_folder():
+    """
+    Prints the current folder where the script is running.
+    """
+    current_folder = os.getcwd()
+    print(f"Current working directory: {current_folder}")

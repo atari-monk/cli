@@ -1,29 +1,25 @@
 import logging
 from cli_app.cli_helpers import print_help
-from cli_app.command_loader import generate_command_descriptions, load_commands
-from cli_app.command_runner import run_command
+from cli_app.command_loader import discover_folders, generate_command_descriptions, load_commands
+from cli_app.command_runner import execute_user_input
 from shared.logger import setup_logger
 
 setup_logger(__name__)
 logger = logging.getLogger(__name__)
 
-def parse_input(user_input):
-    # Split input into command and arguments
-    parts = user_input.split()
-    command = parts[0]
-    args = parts[1:] if len(parts) > 1 else []
-    return command, args
-
 def main():
     print("Welcome to the Simple CLI App! Type 'help' for commands.")
 
-     # Load all available commands
-    commands = []
-    command_files = load_commands()
+    selected_folder = None
 
-    logger.debug(f"command_files: '{command_files}'")
+    folders = discover_folders()
+    logger.debug(f"Discovered folders: {folders}")
 
-    commands = generate_command_descriptions(command_files)
+    folder_commands = load_commands(folders)
+    logger.debug(f"Discovered folder_commands: {folder_commands}")
+    
+    commands = generate_command_descriptions(folder_commands)
+    logger.debug(f"Discovered commands: '{commands}'")
 
     while True:
         # Prompt for user input
@@ -36,20 +32,24 @@ def main():
 
         # Handle the 'help' command
         elif user_input.lower() == "help":
-            print_help(commands)
+            print_help(commands, selected_folder)
 
+        elif user_input.lower().startswith("set_folder"):
+            folder_name = user_input.split(maxsplit=1)[-1]
+            if folder_name in folders:
+                #global current_context
+                selected_folder = folder_name
+                print(f"Folder context set to: {folder_name}")
+                #folder_commands = load_commands(selected_folder)
+                #logger.debug(f"command_files: '{folder_commands}'")
+                #commands = generate_command_descriptions(folder_commands, selected_folder)
+                #logger.debug(f"commands: '{commands}'")
+            else:
+                print(f"Folder '{folder_name}' not found. Available: {folders}")
+                
         else:
             # Parse and execute other commands
-            command, args = parse_input(user_input)
-            if command in [cmd['name'] for cmd in commands]:
-                print(f"Command: {command}")
-                if args:
-                    print(f"Arguments: {args}")
-                else:
-                    print("No arguments provided.")
-                run_command(command)
-            else:
-                print(f"Unknown command '{command}'. Type 'help' for a list of commands.")
+            execute_user_input(user_input, commands, selected_folder)
 
 if __name__ == "__main__":
     main()

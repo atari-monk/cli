@@ -20,8 +20,9 @@ cli/                            # Root folder of repository
 |   |   |   ├── __init__.py     # Module initializer
 |   │   ├──                     # Commands src
 |   └── shared/                 # Shared code
-|       ├── __init__.py         # Module initializer
-|       ├──                     # Shared src
+|   |   ├── __init__.py         # Module initializer
+|   |   ├──                     # Shared src
+|   └── tests/                  # Tests
 ├── .gitignore                  # Git ignore rules
 ├── README.md                   # Project documentation
 ├── requirements.txt            # Dependencies list
@@ -58,41 +59,24 @@ Should generally be committed to version control.
 
 ### Tests
 
-In tests folders. Using pytest.
+Tests is run form src, as app, so that imports should be ok.
 Naming convention:
 
 ```plaintexy
  test_*.py.
 ```
 
-To test shared files i used this assumptions.
-I cd to shared folder.
-Run command
+To run tests:
+
+```bash
+cd src
+```
 
 ```bash
 pytest tests
 ```
 
-This will work when relative import, from folder above tests, to tested file, is correct.  
-Init file is needed in tests folder as relative import is used.
-For example:
-
-```python
-#test file in tests, testing ..logger.py from shared
-#__init__.py file in tests
-import pytest
-import logging
-from ..logger import setup_logger
-```
-
-Files from shared import each other with .
-
-```python
-#file from shared imports other file form shared
-from .logger import log_message
-```
-
-Use s flag with pytest to disable output capturing. You will see test oputput if needed.
+Use s flag with pytest to disable output capturing.
 
 ```bash
 pytest -s

@@ -18,12 +18,10 @@ cli/                            # Root folder of repository
 │   │   ├── __init__.py         # Module initializer
 │   │   ├── lib                 # Code
 |   |   |   ├── __init__.py     # Module initializer
-|   │   ├── tests               # Tests
 |   │   ├──                     # Commands src
 |   └── shared/                 # Shared code
 |       ├── __init__.py         # Module initializer
 |       ├──                     # Shared src
-|       ├── tests               # Tests
 ├── .gitignore                  # Git ignore rules
 ├── README.md                   # Project documentation
 ├── requirements.txt            # Dependencies list

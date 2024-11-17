@@ -1,10 +1,39 @@
 import json
 import logging
 import os
-from cli_app.cli_helpers import print_current_folder
+from pathlib import Path
 from cli_app.config import COMMAND_NAME_MAX_LENGTH
+from shared.logger import setup_logger
 
+setup_logger(__name__)
 logger = logging.getLogger(__name__)
+
+def discover_folders_with_commands(
+    src_folder_with_commands: str = ".",
+    ignore_these_folders: list[str] = ["cli_app", "shared", "lib", "tests"]
+) -> list[str]:
+    """
+    Discover folders containing `__init__.py` files within the specified directory,
+    excluding specified ignored folders.
+
+    Args:
+        src_folder_with_commands (str): Root folder to start searching.
+        ignore_these_folders (list[str]): List of folder names to ignore.
+
+    Returns:
+        list[str]: List of discovered folder names containing `__init__.py`.
+    """
+    src_path = Path(src_folder_with_commands)
+    folders = [
+        folder.name
+        for folder in src_path.rglob("*")
+        if folder.is_dir()
+        and folder.name not in ignore_these_folders
+        and (folder / "__init__.py").exists()
+    ]
+    logger.debug(f"Root: {src_folder_with_commands}, Ignored: {ignore_these_folders}")
+    logger.debug(f"Discovered {len(folders)} folders with the init file: {folders}")
+    return folders
 
 def load_commands(folders, ignore_subfolders=["lib", "tests"]):
     """
@@ -85,17 +114,3 @@ def generate_command_descriptions(folder_commands, descriptions_file='command_de
         folder_data.append({"folder": folder, "commands": commands})
 
     return folder_data
-
-def discover_folders(src_folder=".", ignore_folders=["cli_app", "shared", "lib", "tests"]):
-    """
-    Discover folders containing commands.
-    """
-    print_current_folder()
-    folders = []
-    for root, dirs, files in os.walk(src_folder):
-        dirs[:] = [d for d in dirs if d not in ignore_folders]
-        for folder in dirs:
-            folder_path = os.path.join(root, folder)
-            if "__init__.py" in os.listdir(folder_path):
-                folders.append(folder)
-    return folders

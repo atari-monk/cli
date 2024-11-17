@@ -1,6 +1,6 @@
 import logging
-from cli_app.cli_helpers import print_help
-from cli_app.command_loader import discover_folders, generate_command_descriptions, load_commands
+from cli_app.cli_helpers import print_current_folder, print_help
+from cli_app.command_loader import discover_folders_with_commands, generate_command_descriptions, load_commands
 from cli_app.command_runner import execute_user_input
 from shared.logger import setup_logger
 
@@ -10,10 +10,11 @@ logger = logging.getLogger(__name__)
 def main():
     print("Welcome to the Simple CLI App! Type 'help' for commands.")
 
+    print_current_folder()
+
     selected_folder = None
 
-    folders = discover_folders()
-    logger.debug(f"Discovered folders: {folders}")
+    folders = discover_folders_with_commands()
 
     folder_commands = load_commands(folders)
     logger.debug(f"Discovered folder_commands: {folder_commands}")

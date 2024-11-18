@@ -2,7 +2,7 @@
 
 Notes for py cli app, to aid project.
 
-## Project Assumptions
+## Project Organization
 
 ### Project structure
 

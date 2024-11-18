@@ -1,9 +1,9 @@
 import json
 import logging
-import os
 from pathlib import Path
 from cli_app.config import COMMAND_NAME_MAX_LENGTH
 from shared.logger import setup_logger
+import json
 
 setup_logger(__name__)
 logger = logging.getLogger(__name__)
@@ -35,40 +35,38 @@ def discover_folders_with_commands(
 
     return sorted(folders)
 
-def load_commands(folders, ignore_subfolders=["lib", "tests"]):
-    """
-    Load command files from the specified folder contexts.
+def load_commands(
+    folders: list[str], 
+    ignore_subfolders: list[str] = ["lib", "tests"]
+) -> dict[str, list[str]]:
     
-    :param folders: List of folder paths to search for command files.
-    :param ignore_subfolders: Subfolders to ignore during the search.
-    :return: A dictionary where keys are folder paths and values are lists of command names.
-    """
     if not isinstance(folders, list):
         raise TypeError("The 'folders' parameter must be a list of folder names.")
 
     folder_commands = {}
 
     for folder in folders:
-        print(f"Processing folder: '{folder}'")
-        logger.debug(f"Processing folder: '{folder}'")
+        folder_path = Path(folder)
+        if not folder_path.is_dir():
+            logger.warning(f"Folder does not exist or is not a directory: {folder}")
+            continue
+
+        logger.debug(f"Processing folder: {folder}")
 
         commands = []
-        for _, dirs, files in os.walk(folder):
-            # Filter out ignored subfolders
-            dirs[:] = [d for d in dirs if d not in ignore_subfolders]
+        for subfolder in folder_path.rglob('*'):
+            if subfolder.is_dir() and subfolder.name.lower() in ignore_subfolders:
+                continue
 
-            for filename in files:
-                if filename.endswith(".py") and filename != "__init__.py":
-                    command_name = filename[:-3]
-                    if len(command_name) > COMMAND_NAME_MAX_LENGTH:
-                        raise ValueError(f"Command name '{command_name}' is too long. Maximum allowed length is {COMMAND_NAME_MAX_LENGTH} characters.")
-                    commands.append(command_name)
+            if subfolder.suffix == '.py' and subfolder.name != "__init__.py":
+                command_name = subfolder.stem
+                if len(command_name) > COMMAND_NAME_MAX_LENGTH:
+                    raise ValueError(f"Command name '{command_name}' is too long. Maximum allowed length is {COMMAND_NAME_MAX_LENGTH} characters.")
+                commands.append(command_name)
 
-        folder_commands[folder] = commands
+        folder_commands[str(folder_path)] = commands
 
     return folder_commands
-
-import json
 
 def generate_command_descriptions(folder_commands, descriptions_file='command_descriptions.json'):
     """

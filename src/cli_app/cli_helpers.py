@@ -1,5 +1,10 @@
+import logging
 import os
 from cli_app.config import COMMAND_NAME_MAX_LENGTH
+from shared.logger import setup_logger
+
+setup_logger(__name__)
+logger = logging.getLogger(__name__)
 
 def generate_spaces(count):
     """
@@ -26,6 +31,9 @@ def print_help(folders, current_context):
     print(f"\n  help{generate_spaces(length - len('help'))}- Show this help message")
     print(f"  exit{generate_spaces(length - len('exit'))}- Exit the program")
     print(f"  set_folder [folder_name]{generate_spaces(length - len('set_folder'))}- Set folder context")
+
+    # Log the folder structure for debugging
+    logger.debug(f"Folder structure: {folders}")
 
     for folder_name, commands in folders.items():
         print(f"\n{folder_name} commands:")

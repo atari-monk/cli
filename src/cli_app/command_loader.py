@@ -72,11 +72,9 @@ def load_commands(
                     raise ValueError(f"Command name '{command_name}' is too long. Maximum allowed length is {COMMAND_NAME_MAX_LENGTH} characters.")
 
                 # Assign description from descriptions_data if available
-                description = descriptions_data.get(folder, {}).get(command_name, f"Description for {command_name}")
+                description = descriptions_data.get('commands', {}).get(command_name, f"Description for {command_name}")
                 
-                commands[command_name] = {
-                    "description": description
-                }
+                commands[command_name] = description
 
         folder_commands[str(folder_path)] = commands
 

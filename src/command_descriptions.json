@@ -1,23 +1,15 @@
 {
-    "folders": [
+    "commands": [
+        { "name": "clear", "description": "Clear the console screen" },
         {
-            "folder": "commands",
-            "commands": [
-                { "name": "clear", "description": "Clear the console screen" },
-                {
-                    "name": "example",
-                    "description": "Prints a simple example message"
-                }
-            ]
-        },
+            "name": "example",
+            "description": "Prints a simple example message"
+        }
+    ],
+    "log_project": [
         {
-            "folder": "log_project",
-            "commands": [
-                {
-                    "name": "example",
-                    "description": "Prints a simple example message from log project"
-                }
-            ]
+            "name": "example",
+            "description": "Prints a simple example message from log project"
         }
     ]
 }

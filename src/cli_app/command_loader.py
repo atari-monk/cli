@@ -71,35 +71,28 @@ def load_commands(
 def generate_command_descriptions(
     folder_commands: dict[str, list[str]], 
     descriptions_file: str = 'command_descriptions.json'
-) -> list[dict]:
+) -> dict[str, list[dict]]:
     try:
         with open(descriptions_file, 'r') as f:
             descriptions_data = json.load(f)
     except (json.JSONDecodeError, FileNotFoundError) as e:
         logger.error(f"Error reading descriptions file {descriptions_file}: {e}")
-        return []
+        return {}
 
-    folder_data = []
-
-    folder_desc_map = {
-        folder_desc['folder']: folder_desc['commands']
-        for folder_desc in descriptions_data.get('folders', [])
-    }
+    folder_data = {}
 
     for folder, command_files in folder_commands.items():
-        folder_descriptions = folder_desc_map.get(folder, [])
+        folder_descriptions = descriptions_data.get(folder, [])
+        description_map = {cmd['name']: cmd['description'] for cmd in folder_descriptions}
 
         commands = [
             {
                 "name": command_file,
-                "description": next(
-                    (cmd_desc["description"] for cmd_desc in folder_descriptions if cmd_desc["name"] == command_file), 
-                    "Module not found"
-                )
+                "description": description_map.get(command_file, "Module not found")
             }
             for command_file in command_files
         ]
 
-        folder_data.append({"folder": folder, "commands": commands})
+        folder_data[folder] = commands
 
     return folder_data

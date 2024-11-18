@@ -27,10 +27,9 @@ def print_help(folders, current_context):
     print(f"  exit{generate_spaces(length - len('exit'))}- Exit the program")
     print(f"  set_folder [folder_name]{generate_spaces(length - len('set_folder'))}- Set folder context")
 
-    # Iterate over the folders and their commands
-    for folder in folders:
-        print(f"\n{folder['folder']} commands:")
-        for command in folder['commands']:
+    for folder_name, commands in folders.items():
+        print(f"\n{folder_name} commands:")
+        for command in commands:
             print(f"  {command['name']}{generate_spaces(length - len(command['name']))}- {command['description']}")
 
 def print_current_folder():

@@ -19,10 +19,10 @@ def execute_user_input(user_input, folders, selected_folder):
 
     def find_command_in_folders(command_name):
         matches = []
-        for folder in folders:
-            for cmd in folder['commands']:
+        for folder_name, commands in folders.items():
+            for cmd in commands:
                 if cmd['name'] == command_name:
-                    matches.append(folder['folder'])
+                    matches.append(folder_name)
         return matches
 
     def display_menu(options):

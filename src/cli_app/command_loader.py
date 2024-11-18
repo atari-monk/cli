@@ -68,46 +68,37 @@ def load_commands(
 
     return folder_commands
 
-def generate_command_descriptions(folder_commands, descriptions_file='command_descriptions.json'):
-    """
-    Generate a list of command descriptions for each folder and its associated command files.
-
-    Args:
-        folder_commands (dict): A dictionary where each key is a folder name, and the value is a list of command file names (without extensions).
-        descriptions_file (str): Path to the JSON file containing the descriptions.
-
-    Returns:
-        list: A list of dictionaries containing folder names and their commands with descriptions.
-    """
-    # Load the descriptions from the JSON file
+def generate_command_descriptions(
+    folder_commands: dict[str, list[str]], 
+    descriptions_file: str = 'command_descriptions.json'
+) -> list[dict]:
     try:
         with open(descriptions_file, 'r') as f:
             descriptions_data = json.load(f)
-    except Exception as e:
-        print(f"Error reading descriptions file: {e}")
+    except (json.JSONDecodeError, FileNotFoundError) as e:
+        logger.error(f"Error reading descriptions file {descriptions_file}: {e}")
         return []
 
     folder_data = []
 
-    # Loop through the folders and their command files
+    folder_desc_map = {
+        folder_desc['folder']: folder_desc['commands']
+        for folder_desc in descriptions_data.get('folders', [])
+    }
+
     for folder, command_files in folder_commands.items():
-        commands = []
-        
-        # Find the corresponding folder in the descriptions data
-        folder_descriptions = next(
-            (folder_desc['commands'] for folder_desc in descriptions_data['folders'] if folder_desc['folder'] == folder), 
-            []
-        )
+        folder_descriptions = folder_desc_map.get(folder, [])
 
-        # Loop through each command file and find its description
-        for command_file in command_files:
-            description = "Module not found"
-            for cmd_desc in folder_descriptions:
-                if cmd_desc["name"] == command_file:
-                    description = cmd_desc["description"]
-                    break
-
-            commands.append({"name": command_file, "description": description})
+        commands = [
+            {
+                "name": command_file,
+                "description": next(
+                    (cmd_desc["description"] for cmd_desc in folder_descriptions if cmd_desc["name"] == command_file), 
+                    "Module not found"
+                )
+            }
+            for command_file in command_files
+        ]
 
         folder_data.append({"folder": folder, "commands": commands})
 

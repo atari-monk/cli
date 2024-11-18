@@ -1,6 +1,6 @@
 import logging
 from cli_app.cli_helpers import print_current_folder, print_help
-from cli_app.command_loader import discover_folders_with_commands, generate_command_descriptions, load_commands
+from cli_app.command_loader import discover_folders_with_commands, load_commands
 from cli_app.command_runner import execute_user_input
 from shared.logger import setup_logger
 
@@ -16,12 +16,9 @@ def main():
 
     folders = discover_folders_with_commands()
 
-    folder_commands = load_commands(folders)
-    logger.debug(f"Discovered folder_commands: {folder_commands}")
+    commands = load_commands(folders)
+    logger.debug(f"Discovered commands: {commands}")
     
-    commands = generate_command_descriptions(folder_commands)
-    logger.debug(f"Discovered commands: '{commands}'")
-
     while True:
         # Prompt for user input
         user_input = input("> ").strip()

@@ -37,13 +37,21 @@ def discover_folders_with_commands(
 
 def load_commands(
     folders: dict[str, dict], 
+    descriptions_file: str = 'command_descriptions.json',
     ignore_subfolders: list[str] = ["lib", "tests"]
 ) -> dict[str, dict[str, dict[str, str]]]:
-    
     if not isinstance(folders, dict):  # Corrected check for dict
         raise TypeError("The 'folders' parameter must be a dictionary of folder names and commands.")
 
     folder_commands = {}
+
+    try:
+        # Attempt to load the descriptions file
+        with open(descriptions_file, 'r') as f:
+            descriptions_data = json.load(f)
+    except (json.JSONDecodeError, FileNotFoundError) as e:
+        logger.error(f"Error reading descriptions file {descriptions_file}: {e}")
+        descriptions_data = {}
 
     for folder in folders:
         folder_path = Path(folder)
@@ -63,37 +71,13 @@ def load_commands(
                 if len(command_name) > COMMAND_NAME_MAX_LENGTH:
                     raise ValueError(f"Command name '{command_name}' is too long. Maximum allowed length is {COMMAND_NAME_MAX_LENGTH} characters.")
 
-                # Adding "description" key for each command
+                # Assign description from descriptions_data if available
+                description = descriptions_data.get(folder, {}).get(command_name, f"Description for {command_name}")
+                
                 commands[command_name] = {
-                    "description": f"Description for {command_name}"  # Example, you can adjust it to load actual descriptions
+                    "description": description
                 }
 
         folder_commands[str(folder_path)] = commands
 
     return folder_commands
-
-def generate_command_descriptions(
-    folder_commands: dict[str, dict[str, dict[str, str]]], 
-    descriptions_file: str = 'command_descriptions.json'
-) -> dict[str, dict[str, dict[str, str]]]:
-    try:
-        with open(descriptions_file, 'r') as f:
-            descriptions_data = json.load(f)
-    except (json.JSONDecodeError, FileNotFoundError) as e:
-        logger.error(f"Error reading descriptions file {descriptions_file}: {e}")
-        return {}
-
-    folder_data = {}
-
-    # Merge the descriptions from the file with the loaded commands
-    for folder, command_files in folder_commands.items():
-        folder_descriptions = descriptions_data.get(folder, {})
-
-        folder_data[folder] = {
-            command_file: {  # Ensure each command has a description field
-                "description": folder_descriptions.get(command_file, {}).get("description", "Module not found")
-            }
-            for command_file in command_files
-        }
-
-    return folder_data

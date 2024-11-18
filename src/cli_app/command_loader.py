@@ -12,41 +12,28 @@ def discover_folders_with_commands(
     src_folder_with_commands: str = ".",
     ignore_these_folders: list[str] = ["cli_app", "shared", "lib", "tests"]
 ) -> list[str]:
-    """
-    Discover folders containing `__init__.py` files within the specified directory,
-    excluding specified ignored folders.
-
-    Args:
-        src_folder_with_commands (str): Root folder to start searching.
-        ignore_these_folders (list[str]): List of folder names to ignore.
-
-    Returns:
-        list[str]: List of discovered folder names containing `__init__.py`.
-    """
     src_path = Path(src_folder_with_commands)
 
-     # Ensure the directory exists
     if not src_path.is_dir():
         logger.error(f"Specified source folder does not exist: {src_folder_with_commands}")
         return []
-    
-    # Convert ignored folder names to lowercase to ensure case insensitivity
+
     ignore_set = {folder.lower() for folder in ignore_these_folders}
 
-    # Filter folders containing __init__.py and not in the ignored list
     folders = [
         folder.name
         for folder in src_path.rglob("*")
         if folder.is_dir()
-        and folder.name.lower() not in ignore_set  # Case-insensitive comparison
+        and folder.name.lower() not in ignore_set
         and (folder / "__init__.py").exists()
     ]
 
-    # Log the discovered folders for debugging purposes
-    logger.debug(f"Root: {src_folder_with_commands}, Ignored: {ignore_these_folders}")
+    logger.debug(f"Discovering folders...")
+    logger.debug(f"Root: {src_folder_with_commands}")
+    logger.debug(f"Ignored: {ignore_these_folders}")
     logger.debug(f"Discovered folders: {folders}")
-    
-    return sorted(folders)  # Ensure the result is sorted to match expected order
+
+    return folders.sort()
 
 def load_commands(folders, ignore_subfolders=["lib", "tests"]):
     """

@@ -71,7 +71,7 @@ def load_commands(
 def generate_command_descriptions(
     folder_commands: dict[str, list[str]], 
     descriptions_file: str = 'command_descriptions.json'
-) -> dict[str, list[dict]]:
+) -> dict[str, dict[str, dict]]:
     try:
         with open(descriptions_file, 'r') as f:
             descriptions_data = json.load(f)
@@ -82,17 +82,13 @@ def generate_command_descriptions(
     folder_data = {}
 
     for folder, command_files in folder_commands.items():
-        folder_descriptions = descriptions_data.get(folder, [])
-        description_map = {cmd['name']: cmd['description'] for cmd in folder_descriptions}
+        folder_descriptions = descriptions_data.get(folder, {})
 
-        commands = [
-            {
-                "name": command_file,
-                "description": description_map.get(command_file, "Module not found")
+        folder_data[folder] = {
+            command_file: {
+                "description": folder_descriptions.get(command_file, {}).get("description", "Module not found")
             }
             for command_file in command_files
-        ]
-
-        folder_data[folder] = commands
+        }
 
     return folder_data

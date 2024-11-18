@@ -1,15 +1,11 @@
 {
-    "commands": [
-        { "name": "clear", "description": "Clear the console screen" },
-        {
-            "name": "example",
-            "description": "Prints a simple example message"
-        }
-    ],
-    "log_project": [
-        {
-            "name": "example",
+    "commands": {
+        "clear": { "description": "Clear the console screen" },
+        "example": { "description": "Prints a simple example message" }
+    },
+    "log_project": {
+        "example": {
             "description": "Prints a simple example message from log project"
         }
-    ]
+    }
 }

@@ -29,8 +29,8 @@ def print_help(folders, current_context):
 
     for folder_name, commands in folders.items():
         print(f"\n{folder_name} commands:")
-        for command in commands:
-            print(f"  {command['name']}{generate_spaces(length - len(command['name']))}- {command['description']}")
+        for command_name, command_info in commands.items():
+            print(f"  {command_name}{generate_spaces(length - len(command_name))}- {command_info['description']}")
 
 def print_current_folder():
     """

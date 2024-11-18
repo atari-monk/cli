@@ -33,7 +33,7 @@ def discover_folders_with_commands(
     logger.debug(f"Ignored: {ignore_these_folders}")
     logger.debug(f"Discovered folders: {folders}")
 
-    return folders.sort()
+    return sorted(folders)
 
 def load_commands(folders, ignore_subfolders=["lib", "tests"]):
     """

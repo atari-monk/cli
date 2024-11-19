@@ -1,5 +1,5 @@
 import logging
-from cli_app.cli_helpers import print_current_folder, print_help
+from cli_app.cli_helpers import get_current_working_directory, get_help
 from cli_app.command_loader import discover_folders_with_commands, load_commands
 from cli_app.command_runner import execute_user_input
 from shared.logger import setup_logger
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def main():
     logger.info("Welcome to the Simple CLI App! Type 'help' for commands.")
 
-    print_current_folder()
+    logger.info(get_current_working_directory())
 
     selected_folder = None
 
@@ -24,12 +24,12 @@ def main():
 
         # Handle the 'exit' command
         if user_input.lower() == "exit":
-            print("Exiting the application.")
+            logger.info("Exiting the application.")
             break
 
         # Handle the 'help' command
         elif user_input.lower() == "help":
-            print_help(commands, selected_folder)
+            logger.info(get_help(commands, selected_folder))
 
         elif user_input.lower().startswith("set_folder"):
             folder_name = user_input.split(maxsplit=1)[-1]

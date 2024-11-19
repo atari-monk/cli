@@ -7,7 +7,7 @@ Aided by ai, on my prompts, edited.
 
 ## discover_folders_with_commands
 
-### Method
+### Function
 
 Returns dictionary of folders with commands. For current app folder. Ignoring specified folders.
 
@@ -235,7 +235,7 @@ folders.sort()
 
 ## load_commands
 
-### Method
+### Function
 
 Takes list of folders with commands, returns dictionary that contains folder's command list with descriptions.
 

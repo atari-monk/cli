@@ -1,48 +1,45 @@
 import logging
 import os
+from typing import Optional
 from cli_app.config import COMMAND_NAME_MAX_LENGTH
 from shared.logger import setup_logger
 
 setup_logger(__name__)
 logger = logging.getLogger(__name__)
 
-def generate_spaces(count):
-    """
-    Generates a string with the specified number of spaces.
+def generate_string(count: int, string: str = ' ', max_length: int = 1000) -> str:
+    result = string * count
+    if len(result) > max_length:
+        raise ValueError(f"The resulting string exceeds the maximum allowed length of {max_length}.")
+    return result
 
-    Args:
-        count (int): The number of spaces to generate.
+def generate_padding(length: int, string: str) -> str:
+    padding_length = length - len(string)
+    if padding_length < 0:
+        return ''
+    return generate_string(padding_length)
 
-    Returns:
-        str: A string containing 'count' spaces.
-    """
-    if count < 0:
-        raise ValueError("Count must be a non-negative integer.")
-    return ' ' * count
-
-def print_help(folders, current_context):
-    print("Simple CLI App")
-    print("Commands:")
+def get_help(folders: dict[str, dict[str, dict[str, str]]], selected_folder: Optional[str]) -> None:
+    help = []
+    
+    help.append("Simple CLI App")
+    help.append("Commands:")
+    
+    selected_folder_info = f" Selected folder: {selected_folder}" if selected_folder else " Selected folder: None"
+    help.append(f"\n  {selected_folder_info}")
+    
     length = COMMAND_NAME_MAX_LENGTH
-    context_info = f" Selected folder: {current_context}" if current_context else " Selected folder: None"
-    print(f"\n  {context_info}")
-
-    # Build in commands
-    print(f"\n  help{generate_spaces(length - len('help'))}- Show this help message")
-    print(f"  exit{generate_spaces(length - len('exit'))}- Exit the program")
-    print(f"  set_folder [folder_name]{generate_spaces(length - len('set_folder'))}- Set folder context")
-
-    # Log the folder structure for debugging
-    logger.debug(f"Folder structure: {folders}")
-
+    help.append(f"\n  help{generate_padding(length, 'help')}- Show this help message")
+    help.append(f"  exit{generate_padding(length, 'exit')}- Exit the program")
+    help.append(f"  set_folder [folder_name]{generate_padding(length, 'set_folder')}- Set folder context")
+    
     for folder_name, commands in folders.items():
-        print(f"\n{folder_name} commands:")
+        help.append(f"\n{folder_name} commands:")
         for command_name, command_info in commands.items():
-            print(f"  {command_name}{generate_spaces(length - len(command_name))}- {command_info['description']}")
+            help.append(f"  {command_name}{generate_padding(length, command_name)}- {command_info['description']}")
+    
+    return "\n".join(help)
 
-def print_current_folder():
-    """
-    Prints the current folder where the script is running.
-    """
+def get_current_working_directory():
     current_folder = os.getcwd()
-    print(f"Current working directory: {current_folder}")
+    return f"Current working directory: {current_folder}"

@@ -1,7 +1,7 @@
 # Command Loader Module
 
 Module responsible for constructing data on autodetected folders and their commands.  
-Code with discusions, to add some depth and info.  
+Code with discussions, to add some depth and info.  
 Can be seen as introduction to python.  
 Aided by ai, on my prompts, edited.
 
@@ -9,44 +9,42 @@ Aided by ai, on my prompts, edited.
 
 ### Method
 
-Returns list of folders with commands.
-For current app folder.  
-Ignores specified folders.
+Returns dictionary of folders with commands. For current app folder. Ignoring specified folders.
 
 ```python
 def discover_folders_with_commands(
     src_folder_with_commands: str = ".",
     ignore_these_folders: list[str] = ["cli_app", "shared", "lib", "tests"]
-) -> list[str]:
+) -> dict[str, dict]:
     src_path = Path(src_folder_with_commands)
 
     if not src_path.is_dir():
         logger.error(f"Specified source folder does not exist: {src_folder_with_commands}")
-        return []
+        return {}
 
     ignore_set = {folder.lower() for folder in ignore_these_folders}
 
-    folders = [
-        folder.name
+    folders = {
+        folder.name: {}
         for folder in src_path.rglob("*")
         if folder.is_dir()
         and folder.name.lower() not in ignore_set
         and (folder / "__init__.py").exists()
-    ]
+    }
 
     logger.debug(f"Discovering folders...")
     logger.debug(f"Root: {src_folder_with_commands}")
     logger.debug(f"Ignored: {ignore_these_folders}")
-    logger.debug(f"Discovered folders: {folders}")
+    logger.debug(f"Discovered folders: {list(folders.keys())}")
 
-    return sorted(folders)
+    return folders
 ```
 
 ### Type annotations
 
 Type annotations in pyton should work with static type checkers mypy or editors/IDEs (e.g., PyCharm, VSCode).  
 They are not enforced.  
-In new versions of python they are build in and dont require imports.
+In new versions of python they are build in and dont require imports(lowercase names).
 
 ### Path
 
@@ -127,138 +125,6 @@ Creates a list (`folders`) containing the names of directories under `src_path` 
 
 The process is case-insensitive and efficient with concise filtering.
 
-### Sorting
-
-```python
-sorted(folders)
-```
-
-takes the `folders` list and returns a new list that is **sorted in ascending order**.
-
-**`sorted()` Function**:
-The built-in Python function `sorted()` sorts the elements of an iterable (like a list) and returns a new list.
-By default, it sorts in **ascending order** (lexicographical for strings).
-
-**Why Use `sorted()`?**
-Sorting ensures that the output is predictable and consistent, which can be helpful for:
-
--   Debugging (easy to read logs).
--   Downstream processing (like alphabetized UI elements or ordered iteration).
-
-**Customization**:
-You can provide a custom sorting key using the `key` parameter:
-
-```python
-sorted(folders, key=str.lower)  # Case-insensitive sorting
-```
-
-**Reverse Order**:
-To sort in descending order, use the `reverse=True` parameter:
-
-```python
-sorted(folders, reverse=True)
-```
-
-**In-Place Sorting**:
-If you don't need a new list but want to sort the original list in place, use `.sort()`:
-
-```python
-folders.sort()
-```
-
-## load_commands
-
-### Method
-
-Takes list of folders with commands, returns dictionary that contains folder's command list.
-
-```python
-def load_commands(
-    folders: list[str],
-    ignore_subfolders: list[str] = ["lib", "tests"]
-) -> dict[str, list[str]]:
-
-    if not isinstance(folders, list):
-        raise TypeError("The 'folders' parameter must be a list of folder names.")
-
-    folder_commands = {}
-
-    for folder in folders:
-        folder_path = Path(folder)
-        if not folder_path.is_dir():
-            logger.warning(f"Folder does not exist or is not a directory: {folder}")
-            continue
-
-        logger.debug(f"Processing folder: {folder}")
-
-        commands = []
-        for subfolder in folder_path.rglob('*'):
-            if subfolder.is_dir() and subfolder.name.lower() in ignore_subfolders:
-                continue
-
-            if subfolder.suffix == '.py' and subfolder.name != "__init__.py":
-                command_name = subfolder.stem
-                if len(command_name) > COMMAND_NAME_MAX_LENGTH:
-                    raise ValueError(f"Command name '{command_name}' is too long. Maximum allowed length is {COMMAND_NAME_MAX_LENGTH} characters.")
-                commands.append(command_name)
-
-        folder_commands[str(folder_path)] = commands
-
-    return folder_commands
-```
-
-### Enforcing type at runtime
-
-Checking argument type and raising error if it is not as expected.
-
-```python
- if not isinstance(folders, list):
-        raise TypeError("The 'folders' parameter must be a list of folder names.")
-```
-
-### Dictionary
-
-`folder_commands = {}` defines an **empty dictionary** in Python.
-
-A dictionary in Python is a data structure that stores key-value pairs. It's similar to a hash map or associative array in other programming languages.
-
-```python
-# Define an empty dictionary
-folder_commands = {}
-
-# Add key-value pairs to the dictionary
-folder_commands["create"] = "Create a new folder"
-folder_commands["delete"] = "Delete an existing folder"
-
-# Access a value by key
-print(folder_commands["create"])  # Output: Create a new folder
-
-# Check if a key exists
-if "delete" in folder_commands:
-    print("Delete command is available.")
-
-# Loop through the dictionary
-for command, description in folder_commands.items():
-    print(f"{command}: {description}")
-```
-
-Characteristics:
-**Keys**:
-Must be immutable (e.g., strings, numbers, or tuples).  
-Must be unique.
-
-**Values**:
-Can be any data type (e.g., strings, lists, objects).
-
-**Dynamic**:
-You can add, update, or delete key-value pairs dynamically.
-
-Common Operations:
-=**Adding/Updating a Key**: `folder_commands["key"] = value`  
-**Deleting a Key**: `del folder_commands["key"]`  
-**Retrieving a Value**: `folder_commands["key"]`  
-**Iterating**: `for key, value in folder_commands.items():`
-
 ### List
 
 A **list** in Python is a mutable, ordered collection of items. It allows you to store multiple elements in a single variable and supports various data types, including integers, strings, floats, and even other lists or objects.
@@ -328,49 +194,147 @@ Useful Methods:
 -   `my_list.sort()`: Sort the list (in-place).
 -   `my_list.reverse()`: Reverse the order (in-place).
 
-## generate_command_descriptions
+### Sorting
+
+```python
+sorted(folders)
+```
+
+takes the `folders` list and returns a new list that is **sorted in ascending order**.
+
+**`sorted()` Function**:
+The built-in Python function `sorted()` sorts the elements of an iterable (like a list) and returns a new list.
+By default, it sorts in **ascending order** (lexicographical for strings).
+
+**Why Use `sorted()`?**
+Sorting ensures that the output is predictable and consistent, which can be helpful for:
+
+-   Debugging (easy to read logs).
+-   Downstream processing (like alphabetized UI elements or ordered iteration).
+
+**Customization**:
+You can provide a custom sorting key using the `key` parameter:
+
+```python
+sorted(folders, key=str.lower)  # Case-insensitive sorting
+```
+
+**Reverse Order**:
+To sort in descending order, use the `reverse=True` parameter:
+
+```python
+sorted(folders, reverse=True)
+```
+
+**In-Place Sorting**:
+If you don't need a new list but want to sort the original list in place, use `.sort()`:
+
+```python
+folders.sort()
+```
+
+## load_commands
 
 ### Method
 
-Loads descriptions for commands.
+Takes list of folders with commands, returns dictionary that contains folder's command list with descriptions.
 
 ```python
-def generate_command_descriptions(
-    folder_commands: dict[str, list[str]],
-    descriptions_file: str = 'command_descriptions.json'
-) -> list[dict]:
+def load_commands(
+    folders: list[str],
+    descriptions_file: str = 'command_descriptions.json',
+    ignore_subfolders: list[str] = ["lib", "tests"]
+) -> dict[str, dict[str, str]]:
+
+    if not isinstance(folders, list) or not all(isinstance(folder, str) for folder in folders):
+        raise TypeError("The 'folders' parameter must be a list of folder names as strings.")
+
+    folder_commands = {}
+
     try:
         with open(descriptions_file, 'r') as f:
             descriptions_data = json.load(f)
     except (json.JSONDecodeError, FileNotFoundError) as e:
         logger.error(f"Error reading descriptions file {descriptions_file}: {e}")
-        return []
+        descriptions_data = {}
 
-    folder_data = []
+    for folder in folders:
+        folder_path = Path(folder)
+        if not folder_path.is_dir():
+            logger.warning(f"Folder does not exist or is not a directory: {folder}")
+            continue
 
-    folder_desc_map = {
-        folder_desc['folder']: folder_desc['commands']
-        for folder_desc in descriptions_data.get('folders', [])
-    }
+        logger.debug(f"Processing folder: {folder}")
 
-    for folder, command_files in folder_commands.items():
-        folder_descriptions = folder_desc_map.get(folder, [])
+        commands = {}
+        for subfolder in folder_path.rglob('*.py'):
+            if subfolder.is_dir() or subfolder.name.lower() in ignore_subfolders:
+                continue
 
-        commands = [
-            {
-                "name": command_file,
-                "description": next(
-                    (cmd_desc["description"] for cmd_desc in folder_descriptions if cmd_desc["name"] == command_file),
-                    "Module not found"
-                )
-            }
-            for command_file in command_files
-        ]
+            if subfolder.name != "__init__.py":
+                command_name = subfolder.stem
+                if len(command_name) > COMMAND_NAME_MAX_LENGTH:
+                    raise ValueError(f"Command name '{command_name}' is too long. Maximum allowed length is {COMMAND_NAME_MAX_LENGTH} characters.")
 
-        folder_data.append({"folder": folder, "commands": commands})
+                description = descriptions_data.get('commands', {}).get(command_name, f"Description for {command_name}")
+                commands[command_name] = description
 
-    return folder_data
+        folder_commands[str(folder_path)] = commands
+
+    return folder_commands
 ```
+
+### Enforcing type at runtime
+
+Checking argument type and raising error if it is not as expected.
+
+```python
+ if not isinstance(folders, list) or not all(isinstance(folder, str) for folder in folders):
+        raise TypeError("The 'folders' parameter must be a list of folder names as strings.")
+```
+
+### Dictionary
+
+`folder_commands = {}` defines an **empty dictionary** in Python.
+
+A dictionary in Python is a data structure that stores key-value pairs. It's similar to a hash map or associative array in other programming languages.
+
+```python
+# Define an empty dictionary
+folder_commands = {}
+
+# Add key-value pairs to the dictionary
+folder_commands["create"] = "Create a new folder"
+folder_commands["delete"] = "Delete an existing folder"
+
+# Access a value by key
+print(folder_commands["create"])  # Output: Create a new folder
+
+# Check if a key exists
+if "delete" in folder_commands:
+    print("Delete command is available.")
+
+# Loop through the dictionary
+for command, description in folder_commands.items():
+    print(f"{command}: {description}")
+```
+
+Characteristics:
+**Keys**:
+Must be immutable (e.g., strings, numbers, or tuples).  
+Must be unique.
+
+**Values**:
+Can be any data type (e.g., strings, lists, objects).
+
+**Dynamic**:
+You can add, update, or delete key-value pairs dynamically.
+
+Common Operations:
+=**Adding/Updating a Key**: `folder_commands["key"] = value`  
+**Deleting a Key**: `del folder_commands["key"]`  
+**Retrieving a Value**: `folder_commands["key"]`  
+**Iterating**: `for key, value in folder_commands.items():`
 
 ### Read Json
 
@@ -384,4 +348,3 @@ try:
 ```
 
 Tries to read and parse a JSON file and logs any errors if they arise, returning an empty list in case of failure.
-

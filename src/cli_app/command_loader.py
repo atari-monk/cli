@@ -11,42 +11,42 @@ logger = logging.getLogger(__name__)
 def discover_folders_with_commands(
     src_folder_with_commands: str = ".",
     ignore_these_folders: list[str] = ["cli_app", "shared", "lib", "tests"]
-) -> dict[str, dict]:
+) -> list[str]:
     src_path = Path(src_folder_with_commands)
 
     if not src_path.is_dir():
         logger.error(f"Specified source folder does not exist: {src_folder_with_commands}")
-        return {}
+        return []
 
     ignore_set = {folder.lower() for folder in ignore_these_folders}
 
-    folders = {
-        folder.name: {}
+    folder_names = [
+        folder.name
         for folder in src_path.rglob("*")
         if folder.is_dir()
         and folder.name.lower() not in ignore_set
         and (folder / "__init__.py").exists()
-    }
+    ]
 
     logger.debug(f"Discovering folders...")
     logger.debug(f"Root: {src_folder_with_commands}")
     logger.debug(f"Ignored: {ignore_these_folders}")
-    logger.debug(f"Discovered folders: {list(folders.keys())}")
+    logger.debug(f"Discovered folders: {folder_names}")
 
-    return folders
+    return sorted(folder_names)
 
 def load_commands(
-    folders: dict[str, dict], 
+    folders: list[str], 
     descriptions_file: str = 'command_descriptions.json',
     ignore_subfolders: list[str] = ["lib", "tests"]
 ) -> dict[str, dict[str, dict[str, str]]]:
-    if not isinstance(folders, dict):  # Corrected check for dict
-        raise TypeError("The 'folders' parameter must be a dictionary of folder names and commands.")
+    
+    if not isinstance(folders, list) or not all(isinstance(folder, str) for folder in folders):
+        raise TypeError("The 'folders' parameter must be a list of folder names as strings.")
 
     folder_commands = {}
 
     try:
-        # Attempt to load the descriptions file
         with open(descriptions_file, 'r') as f:
             descriptions_data = json.load(f)
     except (json.JSONDecodeError, FileNotFoundError) as e:
@@ -62,20 +62,18 @@ def load_commands(
         logger.debug(f"Processing folder: {folder}")
 
         commands = {}
-        for subfolder in folder_path.rglob('*'):
-            if subfolder.is_dir() and subfolder.name.lower() in ignore_subfolders:
+        for subfolder in folder_path.rglob('*.py'):
+            if subfolder.is_dir() or subfolder.name.lower() in ignore_subfolders:
                 continue
 
-            if subfolder.suffix == '.py' and subfolder.name != "__init__.py":
+            if subfolder.name != "__init__.py":
                 command_name = subfolder.stem
                 if len(command_name) > COMMAND_NAME_MAX_LENGTH:
                     raise ValueError(f"Command name '{command_name}' is too long. Maximum allowed length is {COMMAND_NAME_MAX_LENGTH} characters.")
 
-                # Assign description from descriptions_data if available
-                description = descriptions_data.get('commands', {}).get(command_name, f"Description for {command_name}")
-                
+                description = descriptions_data.get(folder, {}).get(command_name, f"Description for {command_name} not found")
                 commands[command_name] = description
 
-        folder_commands[str(folder_path)] = commands
+        folder_commands[folder] = commands
 
     return folder_commands

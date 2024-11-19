@@ -8,7 +8,7 @@ setup_logger(__name__)
 logger = logging.getLogger(__name__)
 
 def main():
-    print("Welcome to the Simple CLI App! Type 'help' for commands.")
+    logger.info("Welcome to the Simple CLI App! Type 'help' for commands.")
 
     print_current_folder()
 
@@ -17,7 +17,6 @@ def main():
     folders = discover_folders_with_commands()
 
     commands = load_commands(folders)
-    logger.debug(f"Discovered commands: {commands}")
     
     while True:
         # Prompt for user input

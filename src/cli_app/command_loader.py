@@ -76,4 +76,5 @@ def load_commands(
 
         folder_commands[folder] = commands
 
+    logger.debug(f"Discovered commands: {folder_commands}")
     return folder_commands

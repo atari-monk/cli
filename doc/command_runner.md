@@ -1,8 +1,8 @@
-# Command Runner Module
+# **Command Runner Module**
 
 Module responsible for running commands.
 
-## parse_input
+## **parse_input**
 
 ### Function
 
@@ -101,7 +101,7 @@ assert parse_input('run "multi word argument"') == ("run", ["multi word argument
 assert parse_input('run "arg with \\"embedded quotes\\""') == ("run", ['arg with "embedded quotes"'])
 ```
 
-## find_command_in_folders
+## **find_command_in_folders**
 
 ### Function
 
@@ -307,4 +307,99 @@ run_command("commands", "example_without_run")
 -   Add support for specifying fallback commands.
 -   Enable returning results from the `run` function if needed.
 
-## fff
+## **display_menu**
+
+### **Function**
+
+Displays a menu with the provided folder options and prompts the user to select one.
+
+```python
+def display_menu(options: list[str]) -> str:
+    logger.info("Multiple folders contain this command:")
+    for index, option in enumerate(options, start=1):
+        logger.info(f"{index}. {option}")
+```
+
+### **Parameters**
+
+-   **`options`** (`List[str]`):  
+     A list of folder names to display as options.  
+     Example: `["folder1", "folder2", "folder3"]`.
+
+### **Returns**
+
+-   **`str`**:  
+     The name of the folder selected by the user.
+
+### **Explanation**
+
+The function shows a numbered list of options to the user and calls a helper function (`get_valid_choice`) to handle the user input. It ensures that the user's input is valid and returns the selected folder.
+
+### **Example Usage**
+
+```python
+folders = ["folder1", "folder2", "folder3"]
+selected_folder = display_menu(folders)
+print(f"You selected: {selected_folder}")
+```
+
+---
+
+## **get_valid_choice**
+
+### **Function**
+
+Prompts the user to select a valid folder from the list of options.
+
+```python
+def get_valid_choice(options: list[str]) -> str:
+    while True:
+        try:
+            choice = int(input("Select a folder by number: ")) - 1
+            if 0 <= choice < len(options):
+                return options[choice]
+            else:
+                logger.info("Invalid choice. Please choose a number between 1 and", len(options))
+        except ValueError:
+            logger.error("Invalid input. Please enter a valid number.")
+```
+
+### **Parameters**
+
+-   **`options`** (`List[str]`):  
+     A list of folder names to choose from.  
+     Example: `["folder1", "folder2", "folder3"]`.
+
+### **Returns**
+
+-   **`str`**:  
+     The folder name that the user selects.
+
+### **Explanation**
+
+This helper function handles the logic of validating user input. It will continue prompting the user until they select a valid folder from the provided list. If the input is invalid, it will display an error message.
+
+### **Example Usage**
+
+```python
+folders = ["folder1", "folder2", "folder3"]
+selected_folder = get_valid_choice(folders)
+print(f"You selected: {selected_folder}")
+```
+
+---
+
+### **Notes**
+
+-   **Error Handling**:
+
+    -   If the user inputs an invalid value (e.g., a string instead of a number), the function will prompt them again.
+    -   If the input number is out of range, the function will inform the user and ask again.
+
+-   **User-Friendly**:
+    -   The function logs helpful error messages to guide the user in case of invalid input.
+    -   The user can select folders by their displayed number in the list.
+
+---
+
+## ggggg

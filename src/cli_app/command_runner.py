@@ -33,7 +33,7 @@ def parse_input(user_input: str) -> tuple[str, list[str]]:
     args = parts[1:]
     return command, args
 
-def find_command_in_folders(folders: dict[str, dict[str, dict[str, str]]], command_name: str):
+def find_command_in_folders(folders: dict[str, dict[str, dict[str, str]]], command_name: str) -> list[str]:
     return [folder_name for folder_name, commands in folders.items() if command_name in commands]
 
 def run_command(selected_folder: str, command: str, args: Optional[list[str]] = None) -> None:
@@ -62,16 +62,24 @@ def run_command(selected_folder: str, command: str, args: Optional[list[str]] = 
     else:
         logger.warning(f"Command '{command}' does not have a 'run' function.")
 
-def display_menu(options):
-        print("Multiple folders contain this command:")
-        for i, option in enumerate(options):
-            print(f"{i + 1}. {option}")
-        while True:
-            try:
-                choice = int(input("Select a folder by number: ")) - 1
+def display_menu(options: list[str]) -> str:
+    logger.info("Multiple folders contain this command:")
+    for index, option in enumerate(options, start=1):
+        logger.info(f"{index}. {option}")
+    
+    return get_valid_choice(options)
+
+def get_valid_choice(options: list[str]) -> str:
+    while True:
+        try:
+            choice = input("Select a folder by number: ").strip()
+            if choice.isdigit():
+                choice = int(choice) - 1
                 if 0 <= choice < len(options):
                     return options[choice]
                 else:
-                    print("Invalid choice. Try again.")
-            except ValueError:
-                print("Invalid input. Please enter a number.")
+                    logger.info(f"Invalid choice. Please choose a number between 1 and {len(options)}.")
+            else:
+                raise ValueError
+        except ValueError:
+            logger.error("Invalid input. Please enter a valid number.")

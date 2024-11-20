@@ -402,4 +402,66 @@ print(f"You selected: {selected_folder}")
 
 ---
 
-## ggggg
+Here is the documentation for the `execute_user_input` function:
+
+---
+
+## **execute_user_input**
+
+Handles user input by parsing the command, identifying the corresponding folder(s), and executing the command. The function manages three cases:
+
+1. When a single folder matches the command.
+2. When multiple folders match, prompting the user to select one.
+3. When no folders match, displaying an error message.
+
+### Parameters:
+
+-   **`user_input`** (`str`): The raw user input string containing the command and arguments.
+-   **`folders`** (`dict[str, dict[str, dict[str, str]]]`): A dictionary representing folders and their contents. The keys are folder names, and the values are dictionaries representing commands and their arguments.
+-   **`selected_folder`** (`str`): The current folder selected by the user or default folder. This will be updated based on the command matching logic.
+
+### Returns:
+
+-   **None**: The function does not return a value. Instead, it either runs the command, displays a menu, or shows an error message based on the input.
+
+### Behavior:
+
+1. **Single Match**:
+    - If exactly one folder contains the given command, it is automatically selected, and the command is executed for that folder.
+2. **Multiple Matches**:
+    - If more than one folder contains the command, the user is prompted to select from a list of matching folders using a menu system.
+3. **No Match**:
+    - If no folders contain the command, an error message is displayed informing the user that the command is unknown.
+
+### Example:
+
+```python
+folders = {
+    'folder1': {'command1': {'arg1': 'value1'}},
+    'folder2': {'command1': {'arg1': 'value2'}},
+    'folder3': {'command2': {'arg1': 'value3'}}
+}
+
+# User input for a known command in multiple folders
+execute_user_input("command1 arg1", folders, 'folder1')
+```
+
+In this example:
+
+-   Since `command1` exists in both `folder1` and `folder2`, the user will be presented with a menu to choose between these two folders.
+
+```python
+# User input for an unknown command
+execute_user_input("unknown_command", folders, 'folder1')
+```
+
+In this case:
+
+-   The function will print: `"Unknown command 'unknown_command'. Type 'help' for a list of commands."`
+
+#### Notes:
+
+-   The function relies on external functions (`parse_input`, `find_command_in_folders`, `display_menu`, and `run_command`) to perform parsing, finding matching folders, displaying the menu, and running the commands respectively.
+-   The `selected_folder` is updated based on the user's input or the automatic selection process.
+
+---

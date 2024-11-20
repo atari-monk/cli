@@ -8,21 +8,23 @@ from shared.logger import setup_logger
 setup_logger(__name__)
 logger = logging.getLogger(__name__)
 
-def execute_user_input(user_input, folders, selected_folder):
-
+def execute_user_input(user_input: str, folders: dict[str, dict[str, dict[str, str]]], selected_folder: str):
     command, args = parse_input(user_input)
 
     matching_folders = find_command_in_folders(folders, command)
 
     if len(matching_folders) == 1:
         selected_folder = matching_folders[0]
-        print(f"Automatically selected folder: {selected_folder}")
+        logger.info(f"Automatically selected folder: {selected_folder}")
         run_command(selected_folder, command, args)
-    elif len(matching_folders) > 1:
+        return
+
+    if len(matching_folders) > 1:
         selected_folder = display_menu(matching_folders)
         run_command(selected_folder, command, args)
-    else:
-        print(f"Unknown command '{command}'. Type 'help' for a list of commands.")
+        return
+
+    logger.info(f"Unknown command '{command}'. Type 'help' for a list of commands.")
 
 def parse_input(user_input: str) -> tuple[str, list[str]]:
     if not user_input.strip():

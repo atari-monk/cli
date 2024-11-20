@@ -63,7 +63,9 @@ def load_commands(
 
         commands = {}
         for subfolder in folder_path.rglob('*.py'):
-            if subfolder.is_dir() or subfolder.name.lower() in ignore_subfolders:
+            logger.debug(f"file: {subfolder.name}")
+            if subfolder.is_dir() or subfolder.parent.name.lower() in ignore_subfolders:
+                logger.debug(f"Ignored: {subfolder.name}")
                 continue
 
             if subfolder.name != "__init__.py":

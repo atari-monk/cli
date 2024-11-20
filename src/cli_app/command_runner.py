@@ -1,11 +1,12 @@
 import importlib.util
 import importlib
+import shlex
 
 def execute_user_input(user_input, folders, selected_folder):
 
     command, args = parse_input(user_input)
 
-    matching_folders = find_command_in_folders(command)
+    matching_folders = find_command_in_folders(folders, command)
 
     if len(matching_folders) == 1:
         selected_folder = matching_folders[0]
@@ -17,10 +18,13 @@ def execute_user_input(user_input, folders, selected_folder):
     else:
         print(f"Unknown command '{command}'. Type 'help' for a list of commands.")
 
-def parse_input(user_input):
-    parts = user_input.split()
+def parse_input(user_input: str) -> tuple[str, list[str]]:
+    if not user_input.strip():
+        return '', []
+
+    parts = shlex.split(user_input)
     command = parts[0]
-    args = parts[1:] if len(parts) > 1 else []
+    args = parts[1:]
     return command, args
 
 def find_command_in_folders(folders, command_name):

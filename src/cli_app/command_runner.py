@@ -27,12 +27,8 @@ def parse_input(user_input: str) -> tuple[str, list[str]]:
     args = parts[1:]
     return command, args
 
-def find_command_in_folders(folders, command_name):
-    matches = []
-    for folder_name, commands in folders.items():
-        if command_name in commands:
-            matches.append(folder_name)
-    return matches
+def find_command_in_folders(folders: dict[str, dict[str, dict[str, str]]], command_name: str):
+    return [folder_name for folder_name, commands in folders.items() if command_name in commands]
 
 def run_command(selected_folder, command, args = None):
     module_name = f"{selected_folder}.{command}"

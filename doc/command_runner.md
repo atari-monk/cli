@@ -101,4 +101,70 @@ assert parse_input('run "multi word argument"') == ("run", ["multi word argument
 assert parse_input('run "arg with \\"embedded quotes\\""') == ("run", ['arg with "embedded quotes"'])
 ```
 
-## ff
+## find_command_in_folders
+
+### Function
+
+Searches for a specific command name in the folders and returns a list of folder names that contain the command.
+
+```python
+def find_command_in_folders(
+    folders: Dict[str, Dict[str, Dict[str, str]]], 
+    command_name: str
+) -> List[str]:
+```
+
+### Parameters
+
+- **folders** (`Dict[str, Dict[str, Dict[str, str]]]`): 
+  A dictionary representing the folder structure, where:
+  - Keys are folder names (`str`).
+  - Values are dictionaries where each key is a command name (`str`), and the value is a dictionary of command details (e.g., description).
+  
+  Example:
+  ```python
+  {
+      "commands": {
+          "clear": { "description": "Clear the console screen" },
+          "example": { "description": "Prints a simple example message" }
+      },
+      "log_project": {
+          "example": { "description": "Prints a simple example message from log project" }
+      }
+  }
+  ```
+
+- **command_name** (`str`): 
+  A string representing the name of the command to search for.
+
+### Returns
+
+- **List[str]**: 
+  A list of folder names (`str`) where the specified `command_name` is found in the folder's commands. If the command is not found in any folder, an empty list is returned.
+
+### Example
+
+```python
+folders = {
+    "commands": {
+        "clear": { "description": "Clear the console screen" },
+        "example": { "description": "Prints a simple example message" }
+    },
+    "log_project": {
+        "example": { "description": "Prints a simple example message from log project" }
+    },
+    "misc_project": {
+        "clear": { "description": "Clears something in the misc project" }
+    },
+    "empty_project": {}
+}
+
+result = find_command_in_folders(folders, "example")
+# result: ['commands', 'log_project']
+```
+
+### Explanation
+
+- The function searches through the provided `folders` dictionary for a given `command_name`.
+- It returns a list of all folders where the `command_name` exists as a key in the respective folder's commands.
+- If the command is not found in any folder, the result will be an empty list.

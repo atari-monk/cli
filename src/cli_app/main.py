@@ -1,12 +1,11 @@
-import logging
 from typing import Optional
+from cli_app.config import LOGGER_CONFIG
 from shared.logger import setup_logger
 from cli_app.cli_helpers import get_current_working_directory, get_help
 from cli_app.command_loader import discover_folders_with_commands, load_commands
 from cli_app.command_runner import execute_user_input
 
-setup_logger(__name__)
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__, LOGGER_CONFIG)
 
 def main() -> None:
     logger.info("Welcome to the Simple CLI App! Type 'help' for commands.")

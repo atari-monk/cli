@@ -1,12 +1,11 @@
 import importlib.util
 import importlib
-import logging
 import shlex
 from typing import Optional
+from cli_app.config import LOGGER_CONFIG
 from shared.logger import setup_logger
 
-setup_logger(__name__)
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__, LOGGER_CONFIG)
 
 def execute_user_input(user_input: str, folders: dict[str, dict[str, dict[str, str]]], selected_folder: str):
     command, args = parse_input(user_input)

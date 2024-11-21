@@ -1,11 +1,6 @@
-import logging
 import os
 from typing import Optional
 from cli_app.config import COMMAND_NAME_MAX_LENGTH
-from shared.logger import setup_logger
-
-setup_logger(__name__)
-logger = logging.getLogger(__name__)
 
 def generate_string(count: int, string: str = ' ', max_length: int = 1000) -> str:
     result = string * count

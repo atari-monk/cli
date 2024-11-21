@@ -1,12 +1,10 @@
 import json
-import logging
 from pathlib import Path
-from cli_app.config import COMMAND_NAME_MAX_LENGTH
+from cli_app.config import COMMAND_NAME_MAX_LENGTH, LOGGER_CONFIG
 from shared.logger import setup_logger
 import json
 
-setup_logger(__name__)
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__, LOGGER_CONFIG)
 
 def discover_folders_with_commands(
     src_folder_with_commands: str = ".",

@@ -14,7 +14,7 @@ cli/                            # Root folder of repository
 │   └── cli_app/                # CLI application module
 │   │   ├── __init__.py         # Module initializer
 │   │   ├── app.py              # Main CLI logic
-│   └── log_project/            # Log project module
+│   └── example/                # Example project module
 │   │   ├── __init__.py         # Module initializer
 │   │   ├── lib                 # Code
 |   |   |   ├── __init__.py     # Module initializer
